@@ -8,6 +8,7 @@ const index = () => import('@/views/index')
 const discover = () => import('@/views/discover')
 const order = () => import('@/views/order')
 const profile = () => import('@/views/profile')
+const search = () => import('@/views/search')
 
 Vue.use(Router)
 
@@ -40,6 +41,12 @@ export default new Router({
           component: profile,
         }
       ]
+    },
+    {
+      path: '/search',
+      name: search,
+      component: search
     }
+
   ]
 })
