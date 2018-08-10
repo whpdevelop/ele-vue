@@ -9,6 +9,7 @@ const discover = () => import('@/views/discover')
 const order = () => import('@/views/order')
 const profile = () => import('@/views/profile')
 const search = () => import('@/views/search')
+const shopDetail = () => import('@/views/shopDetail')
 
 Vue.use(Router)
 
@@ -44,9 +45,13 @@ export default new Router({
     },
     {
       path: '/search',
-      name: search,
+      name: 'search',
       component: search
+    },
+    {
+      path: '/shopDetail',
+      name: 'shopDetail',
+      component: shopDetail
     }
-
   ]
 })

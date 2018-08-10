@@ -32,6 +32,8 @@ import { Tag } from 'vant';
 Vue.use(Tag);
 import { Loading } from 'vant';
 Vue.use(Loading);
+import { NavBar } from 'vant';
+Vue.use(NavBar);
 
 
 Vue.config.productionTip = false

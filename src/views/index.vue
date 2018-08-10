@@ -46,7 +46,7 @@
 
         <!-- 商家列表 -->
         <van-cell-group>
-          <van-cell class="item" v-for="(item,index) in shopLists" :key="index">
+          <van-cell class="item" v-for="(item,index) in shopLists" :key="index" @click="toDetail({id:item.restaurant.id,src:item.restaurant.image_path,title:item.restaurant.name})">
             <van-row>
               <van-col span="6">
                 <img :src="imgsrc.format(item.restaurant.image_path,item.restaurant.image_path.includes('jpeg')?'jpeg':'png')" alt="">
@@ -105,7 +105,7 @@ export default {
       recommendShops: [
         { title: "品质联盟" },
         { title: "距离最近" },
-        { title: "品质联盟" },
+        // { title: "品质联盟" },
         { title: "筛选" }
       ],
       shopLists: []
@@ -126,9 +126,14 @@ export default {
         this.shopLists.push(...res.data.items);
         // console.log(this.shopLists);
       });
+    },
+    // 跳转详情页
+    toDetail(obj) {
+      this.$router.push({ name: "shopDetail", params: obj });
     }
   },
   mounted() {
+    // 滚动加载更多
     window.onscroll = () => {
       let that = this;
       scrollLoad(that, "shopList", () => {
@@ -140,6 +145,9 @@ export default {
         });
       });
     };
+  },
+  destroyed() {
+    window.onscroll = null;
   },
   components: {}
 };
