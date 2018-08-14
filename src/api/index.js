@@ -4,7 +4,9 @@
 */
 
 import axios from 'axios'
+http://172.16.29.66:8081/#/index
 axios.defaults.baseURL = 'http://127.0.0.1:3000/restapi/shopping';
+// axios.defaults.baseURL = 'http://172.16.29:3000/restapi/shopping';
 
 // 获取首页的食品入口数据
 
@@ -30,3 +32,11 @@ export const getListData = (offset = 0, num = 0) => {
     https://h5.ele.me/restapi/shopping/v3/restaurants?latitude=39.90469&longitude=116.407173&offset=0&limit=8&extras[]=activities&extras[]=tags&extra_filters=home&order_by=5&rank_id=&terminal=h5
 
  */
+
+// 根据id 获取该商铺具体信息
+// /shopping/v2/menu?restaurant_id=406894&terminal=h5
+
+export const getDetailData = (id) => {
+    let url = `/v2/menu?restaurant_id=${id}&terminal=h5`
+    return axios.get(url)
+}
