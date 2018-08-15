@@ -61,17 +61,17 @@
               <ul>
                 <li v-for="(item,index) in item.data" :key="index">
                   <div class="left">
-                  <img :src="imgsrc.format(item.image_path,item.image_path.includes('jpeg')?'jpeg':'png')" alt="">
-              </div>
-              <div class="right">
-                  <h5>{{item.name}}</h5>
-                  <p > {{item.description}}</p>
-                  <p>{{item.tips}}</p>
-                  <p>
-                    <span>¥{{item.specfoods[0].price}}</span>
-                    <span>+</span>
-                  </p>
-              </div>
+                      <img :src="imgsrc.format(item.image_path,item.image_path.includes('jpeg')?'jpeg':'png')" alt="">
+                  </div>
+                  <div class="right">
+                      <h5>{{item.name}}</h5>
+                      <p > {{item.description}}</p>
+                      <p>{{item.tips}}</p>
+                      <p>
+                        <span>¥{{item.specfoods[0].price}}</span>
+                        <span>+</span>
+                      </p>
+                  </div>
                 </li>
               </ul>
           </li>
@@ -100,21 +100,22 @@ export default {
     // 设置食物列表的固定高度
     this.listH = window.innerHeight - 51;
     if (!localStorage.getItem(this.$route.name)) {
-      console.log();
       this.init();
     }
     this.info = JSON.parse(localStorage.getItem(this.$route.name));
   },
   mounted() {
-    // let lis = this.$refs.list;
-    // console.log(lis.length);
+    let lis = this.$refs.list;
+    // console.log(this.$refs.list);
     // 食物区域的滚动处理
-    // this.initScroll();
+    this.initScroll();
 
     this.$nextTick(() => {
-      if (!this.initScroll) {
-      } else {
-      }
+      // if (!this.initScroll) {
+      // } else {
+      // }
+      // let lis = this.$refs.list;
+      // console.log(lis.length);
     });
 
     // 获取 nav 盒子的高度
@@ -126,7 +127,12 @@ export default {
     window.addEventListener("scroll", this.fixedHandle.bind(this), false);
   },
   updated() {
-    this.initScroll();
+    let lis = this.$refs.list;
+    this.listScroll.refresh();
+    // console.log(this.$refs.list);
+    // this.$nextTick(() => {
+    //   this.initScroll();
+    // });
   },
   methods: {
     init() {
@@ -146,7 +152,6 @@ export default {
           arr.push({ name: item.name, data: item.foods });
         });
         this.foods.push(...arr);
-        console.log(this.foods);
       });
     },
     onClickLeft() {
@@ -157,6 +162,9 @@ export default {
       this.listScroll = new BScroll(this.$refs.foodLists, {
         click: true,
         scrollY: true
+      });
+      this.listScroll.on("scrollEnd", () => {
+        this.listScroll.refresh();
       });
       this.navScroll = new BScroll(this.$refs.foodNav, {
         click: true,
@@ -174,13 +182,19 @@ export default {
     },
     // 跳转到导航对应的内容
     toFoodList(index) {
+      this.listScroll.refresh();
       // this.$refs.list 获取所有的列表
       let el = this.$refs.list[index];
       // 滚动到相应的位置
       this.listScroll.scrollToElement(el, 300);
     }
   },
-  watch: {},
+  watch: {
+    dom: function(a, b) {
+      console.log(a);
+      console.log(b);
+    }
+  },
   destroyed() {
     localStorage.removeItem(this.keyName);
   },
