@@ -39,7 +39,7 @@
       </van-col>
     </van-row>
     <!-- 推荐商家 -->
-    <p>- 推荐商家 -</p>
+    <p ref="remc">- 推荐商家 -</p>
 
     <van-tabs v-model="active" class="list">
       <van-tab v-for="(item,index) in recommendShops" :title="item.title" :key="index">
@@ -133,12 +133,13 @@ export default {
     }
   },
   mounted() {
+    // console.dir(this.$refs.remc);
     // 滚动加载更多
     window.onscroll = () => {
       let that = this;
       scrollLoad(that, "shopList", () => {
         getListData(this.offset).then(res => {
-          console.log(res);
+          // console.log(res);
           this.offset += 8;
           this.flag = true;
           this.shopLists.push(...res.data.items);

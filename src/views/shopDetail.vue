@@ -46,16 +46,28 @@
         </li>
     </ul>
     <div class="foodList" ref="foodList" :style="{height:listH+'px'}">
+      <!-- 商铺导航 -->
       <div class="foodNav" ref="foodNav">
         <ul>
-          <li v-for="(item,index) in foodListData" :key="index" @click="toFoodList(index)">{{item.name}}</li>
+          <li 
+            v-for="(item,index) in foodListData" :key="index" 
+            @click="toFoodList(index)"
+            :class = "{'active':currentIndex==index}"
+          >
+          {{item.name}}
+          </li>
         </ul>
       </div>
+      <!-- 商铺列表 -->
       <div class="foodLists" ref="foodLists">
         <ul>
-          <li v-for="(item,index) in foods" :key="index" ref="list">
+          <li 
+            v-for="(item,index) in foods" 
+            :key="index" 
+            ref="list"
+          >
           <!-- <li v-for="index in 80" :key="index" ref="list"> -->
-            <h4>
+            <h4 >
               {{item.name}}
             </h4>
               <ul>
@@ -64,8 +76,8 @@
                       <img :src="imgsrc.format(item.image_path,item.image_path.includes('jpeg')?'jpeg':'png')" alt="">
                   </div>
                   <div class="right">
-                      <h5>{{item.name}}</h5>
-                      <p > {{item.description}}</p>
+                      <h5 class="textOne">{{item.name}}</h5>
+                      <p class="textOne"> {{item.description}}</p>
                       <p>{{item.tips}}</p>
                       <p>
                         <span>¥{{item.specfoods[0].price}}</span>
@@ -88,13 +100,47 @@ import { getDetailData } from "@/api";
 export default {
   data() {
     return {
+      num: 8,
+      activeFlag: 0,
       info: {},
       keyName: this.$route.name,
       listH: 0,
       fixedFlag: false,
       foodListData: [],
-      foods: []
+      foods: [],
+      lis: null,
+      listHeight: [],
+      scrollH: 0
     };
+  },
+  computed: {
+    currentIndex() {
+      console.log(this.listHeight);
+      for (let i = 0; i < this.listHeight.length; i++) {
+        let height1 = this.listHeight[i];
+        let height2 = this.listHeight[i + 1];
+        if (this.scrollH >= height1 && this.scrollH <= height2) {
+          console.log(i);
+          return i + 1;
+        }
+      }
+      return 0;
+    }
+  },
+  watch: {
+    lis() {
+      let height = 0;
+      if (this.lis) {
+        this.lis.forEach(item => {
+          console.log(item, item.offsetHeight);
+          height += item.offsetHeight;
+          this.listHeight.push(height);
+        });
+        // this.listHeight[this.listHeight.length - 1] =
+        //   this.listHeight[this.listHeight.length - 1] * 2;
+      }
+      // console.log(this.listHeight);
+    }
   },
   created() {
     // 设置食物列表的固定高度
@@ -105,19 +151,8 @@ export default {
     this.info = JSON.parse(localStorage.getItem(this.$route.name));
   },
   mounted() {
-    let lis = this.$refs.list;
-    // console.log(this.$refs.list);
     // 食物区域的滚动处理
     this.initScroll();
-
-    this.$nextTick(() => {
-      // if (!this.initScroll) {
-      // } else {
-      // }
-      // let lis = this.$refs.list;
-      // console.log(lis.length);
-    });
-
     // 获取 nav 盒子的高度
     let navH = this.$refs.nav.offsetHeight;
     // 获取title 盒子的高度
@@ -127,25 +162,17 @@ export default {
     window.addEventListener("scroll", this.fixedHandle.bind(this), false);
   },
   updated() {
-    let lis = this.$refs.list;
-    this.listScroll.refresh();
-    // console.log(this.$refs.list);
-    // this.$nextTick(() => {
-    //   this.initScroll();
-    // });
+    this.lis = this.$refs.list;
   },
   methods: {
     init() {
-      //   this.$route.params
-      // console.log(JSON.stringify(this.$route.params));
       localStorage.setItem(
         this.$route.name,
         JSON.stringify(this.$route.params)
       );
       // 获取数据 foodlistnavdata
-      // console.log(this.$route.params.id);
       getDetailData(this.$route.params.id).then(res => {
-        // console.log(res);
+        console.log(res);
         this.foodListData.push(...res.data);
         let arr = [];
         res.data.forEach(item => {
@@ -155,16 +182,19 @@ export default {
       });
     },
     onClickLeft() {
-      //   this.$router.push("/index");
       this.$router.go(-1);
     },
     initScroll() {
       this.listScroll = new BScroll(this.$refs.foodLists, {
         click: true,
-        scrollY: true
+        // tap: true,
+        // scrollY: true
+        probeType: 3
       });
-      this.listScroll.on("scrollEnd", () => {
+      this.listScroll.on("scroll", e => {
         this.listScroll.refresh();
+        this.scrollH = Math.abs(Math.round(e.y));
+        console.log(this.scrollH);
       });
       this.navScroll = new BScroll(this.$refs.foodNav, {
         click: true,
@@ -187,12 +217,10 @@ export default {
       let el = this.$refs.list[index];
       // 滚动到相应的位置
       this.listScroll.scrollToElement(el, 300);
-    }
-  },
-  watch: {
-    dom: function(a, b) {
-      console.log(a);
-      console.log(b);
+    },
+    navPosition(index) {
+      this.num = index;
+      console.log(index);
     }
   },
   destroyed() {
@@ -295,13 +323,20 @@ export default {
     overflow: hidden;
     display: flex;
     .foodNav {
-      border-right: 1px solid #ccc;
+      // border-right: 1px solid #ccc;
+      background-color: #f8f8f8;
       flex: 1;
+      .active {
+        background-color: #fff;
+        border-right: none;
+      }
+
       ul {
         li {
           line-height: 1rem;
           text-align: center;
           border-bottom: 1px solid #ccc;
+          border-right: 1px solid #ccc;
         }
       }
     }
@@ -314,6 +349,7 @@ export default {
             li {
               display: flex;
               flex-wrap: wrap;
+              height: 2rem;
               .left {
                 // width: 1.5rem;
                 // height: 1.5rem;
@@ -329,6 +365,10 @@ export default {
                 padding: 0 0.2rem;
                 p {
                   font-size: 0.1rem;
+                }
+                p:nth-of-type(1) {
+                  height: 20px;
+                  overflow: hidden;
                 }
                 p:nth-of-type(3) {
                   span:nth-of-type(1) {

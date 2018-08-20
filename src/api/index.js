@@ -5,7 +5,7 @@
 
 import axios from 'axios'
 http://172.16.29.66:8081/#/index
-axios.defaults.baseURL = 'http://127.0.0.1:3000/restapi/shopping';
+axios.defaults.baseURL = 'http://www.whplover.top:3000/restapi/shopping';
 // axios.defaults.baseURL = 'http://172.16.29:3000/restapi/shopping';
 
 // 获取首页的食品入口数据
